@@ -6,13 +6,18 @@ import { buildSchema } from 'type-graphql';
 import { DataSchema } from './graphql';
 
 dotenv.config();
-mongoose.connect(
-  `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@violet.zoqgo.mongodb.net/anais?retryWrites=true&w=majority`,
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  () => console.log(`Successfully connected to mongoDB`),
-);
 
 const start = async () => {
+  try {
+    await mongoose.connect(
+      `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@violet.zoqgo.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`,
+      { useNewUrlParser: true, useUnifiedTopology: true },
+    );
+    console.log(`Connected to MongoDB`);
+  } catch (err) {
+    console.error(`Error connecting to MongoDB`, err);
+  }
+
   const schema = await buildSchema({ resolvers: [DataSchema] });
 
   const server = new ApolloServer({
